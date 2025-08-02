@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সার্টিফিকেট ভেরিফায়ার - মাল্টি শীট (ফিক্সড)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="//sheets.googleapis.com">
+    <link rel="preconnect" href="https://sheets.googleapis.com">
+    
+    <style>
+        /* Additional styles for multi-sheet functionality */
+        .multi-sheet-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .multi-sheet-info h4 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .multi-sheet-info p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .version-badge {
+            background: #ff9800;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .loading-content {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>একাধিক শীট থেকে ডেটা লোড করা হচ্ছে...</h3>
+            <p>অনুগ্রহ করে অপেক্ষা করুন</p>
+            <div id="loadingStatus" style="margin-top: 15px; font-size: 14px; color: #666;"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-certificate"></i>
+                    <h1>সার্টিফিকেট ভেরিফায়ার</h1>
+                    <span class="version-badge">মাল্টি শীট ফিক্সড</span>
+                </div>
+                <p class="subtitle">আপনার পরীক্ষার ফলাফল যাচাই করুন</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Multi-Sheet Info -->
+    <div class="container">
+        <div class="multi-sheet-info">
+            <h4><i class="fas fa-layer-group"></i> একাধিক শীট সাপোর্ট</h4>
+            <p>এই সংস্করণটি একসাথে একাধিক Google Sheets (Sheet1, Sheet2, Sheet3...) থেকে ডেটা অনুসন্ধান করতে পারে।</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <main class="main">
+        <div class="container">
+            <div class="search-card">
+                <h2 class="search-title">এ্যাডমিট নাম্বার দিয়ে সার্চ করুন</h2>
+                
+                <div class="search-form">
+                    <div class="input-group">
+                        <i class="fas fa-search input-icon"></i>
+                        <input 
+                            type="text" 
+                            id="admitNumber" 
+                            placeholder="এ্যাডমিট নাম্বার লিখুন..."
+                            class="search-input"
+                            autocomplete="off"
+                        >
+                        <button id="searchButton" class="search-button">
+                            <i class="fas fa-search"></i>
+                            সার্চ করুন
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-help">
+                    <p><i class="fas fa-info-circle"></i> সিস্টেম স্বয়ংক্রিয়ভাবে সকল উপলব্ধ শীট থেকে ডেটা অনুসন্ধান করবে।</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Result Section -->
+    <section id="resultSection" class="result-section" style="display: none;">
+        <div class="container">
+            <div class="result-card">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>পরীক্ষার ফলাফল</h2>
+                </div>
+                
+                <div id="resultContent" class="result-content">
+                    <!-- Result content will be inserted here -->
+                </div>
+                
+                <div class="result-actions">
+                    <button onclick="printResult()" class="action-button print-button">
+                        <i class="fas fa-print"></i>
+                        প্রিন্ট করুন
+                    </button>
+                    
+                    <button onclick="downloadResult()" class="action-button download-button">
+                        <i class="fas fa-download"></i>
+                        ডাউনলোড করুন
+                    </button>
+                    
+                    <button onclick="newSearch()" class="action-button new-search-button">
+                        <i class="fas fa-search"></i>
+                        নতুন সার্চ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; ২০২৫ সার্টিফিকেট ভেরিফায়ার। সকল অধিকার সংরক্ষিত।</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_KEY: 'AIzaSyCiEgyS_hZLOPYfntM2b5imvAx9iIWBSHY',
+            SHEET_ID: '1ia2pkU2Zx0IKF4XI4Os_pVZfdlFqb815IwkDmc9IBpc',
+            SHEET_NAMES: ['Sheet1', 'Sheet2', 'Sheet3', 'Sheet4', 'Sheet5'],
+            MAX_RETRIES: 3,
+            RETRY_DELAY: 1000,
+            CACHE_DURATION: 5 * 60 * 1000 // 5 minutes
+        };
+
+        // Cache management
+        let multiSheetCache = {
+            data: new Map(),
+            timestamp: null,
+            
+            isValid: function() {
+                return this.timestamp && (Date.now() - this.timestamp) < CONFIG.CACHE_DURATION;
+            },
+            
+            set: function(allData) {
+                this.data = allData;
+                this.timestamp = Date.now();
+            },
+            
+            clear: function() {
+                this.data.clear();
+                this.timestamp = null;
+            }
+        };
+
+        // Loading management
+        function showLoading(message = 'অনুসন্ধান করা হচ্ছে...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const status = document.getElementById('loadingStatus');
+            const searchButton = document.getElementById('searchButton');
+            
+            if (overlay) overlay.style.display = 'flex';
+            if (status) status.textContent = message;
+            if (searchButton) {
+                searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> অনুসন্ধান করা হচ্ছে...';
+                searchButton.disabled = true;
+            }
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            const searchButton = document.getElementById('searchButton');
+            
+            if (overlay) overlay.style.display = 'none';
+            if (searchButton) {
+                searchButton.innerHTML = '<i class="fas fa-search"></i> সার্চ করুন';
+                searchButton.disabled = false;
+            }
+        }
+
+        // Exponential backoff retry
+        async function retryWithBackoff(fn, maxRetries = CONFIG.MAX_RETRIES) {
+            let retries = 0;
+            
+            while (retries < maxRetries) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    retries++;
+                    
+                    if (retries === maxRetries) {
+                        throw error;
+                    }
+                    
+                    const delay = CONFIG.RETRY_DELAY * Math.pow(2, retries - 1) + Math.random() * 1000;
+                    console.log(`Retry ${retries}/${maxRetries} after ${delay}ms`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        // Get available sheets
+        async function getAvailableSheets() {
+            try {
+                const metadataUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}?key=${CONFIG.API_KEY}&fields=sheets.properties.title`;
+                
+                const response = await retryWithBackoff(async () => {
+                    const res = await fetch(metadataUrl);
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                    }
+                    return res.json();
+                });
+
+                const availableSheets = response.sheets.map(sheet => sheet.properties.title);
+                console.log('Available sheets:', availableSheets);
+                
+                return availableSheets;
+                
+            } catch (error) {
+                console.error('Error getting sheet metadata:', error);
+                return CONFIG.SHEET_NAMES;
+            }
+        }
+
+        // Fetch data from a single sheet
+        async function fetchSheetData(sheetName) {
+            const range = `${sheetName}!A:G`;
+            const encodedRange = encodeURIComponent(range);
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodedRange}?key=${CONFIG.API_KEY}&majorDimension=ROWS`;
+
+            try {
+                const response = await retryWithBackoff(async () => {
+                    console.log(`Fetching data from ${sheetName}`);
+                    const res = await fetch(url);
+                    
+                    if (!res.ok) {
+                        if (res.status === 400) {
+                            console.log(`Sheet "${sheetName}" not found or empty`);
+                            return { values: [] };
+                        }
+                        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                    }
+                    
+                    return res.json();
+                });
+
+                const data = response.values ? response.values.slice(1) : [];
+                console.log(`Fetched ${data.length} rows from ${sheetName}`);
+                
+                return data;
+                
+            } catch (error) {
+                console.error(`Error fetching data from ${sheetName}:`, error);
+                return [];
+            }
+        }
+
+        // Fetch data from all sheets
+        async function fetchAllSheetsData() {
+            if (multiSheetCache.isValid() && multiSheetCache.data.size > 0) {
+                console.log('Using cached multi-sheet data');
+                return multiSheetCache.data;
+            }
+
+            console.log('Fetching fresh data from multiple sheets');
+            showLoading('একাধিক শীট থেকে ডেটা লোড করা হচ্ছে...');
+
+            try {
+                const availableSheets = await getAvailableSheets();
+                const allSheetData = new Map();
+                
+                for (let i = 0; i < availableSheets.length; i++) {
+                    const sheetName = availableSheets[i];
+                    const status = document.getElementById('loadingStatus');
+                    if (status) {
+                        status.textContent = `প্রসেসিং: ${sheetName} (${i + 1}/${availableSheets.length})`;
+                    }
+                    
+                    const sheetData = await fetchSheetData(sheetName);
+                    
+                    if (sheetData.length > 0) {
+                        allSheetData.set(sheetName, sheetData);
+                        console.log(`Successfully loaded ${sheetData.length} records from ${sheetName}`);
+                    }
+                    
+                    if (i < availableSheets.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                    }
+                }
+
+                multiSheetCache.set(allSheetData);
+                
+                let totalRecords = 0;
+                allSheetData.forEach(sheetData => {
+                    totalRecords += sheetData.length;
+                });
+                
+                console.log(`Total records loaded from ${allSheetData.size} sheets: ${totalRecords}`);
+                
+                return allSheetData;
+
+            } catch (error) {
+                console.error('Error fetching multi-sheet data:', error);
+                throw error;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultContent.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>তথ্য পাওয়া যায়নি</h3>
+                    <p>${message}</p>
+                    <button onclick="newSearch()" class="retry-button">
+                        <i class="fas fa-redo"></i>
+                        পুনরায় চেষ্টা করুন
+                    </button>
+                </div>
+            `;
+            
+            resultSection.style.display = 'block';
+        }
+
+        // Show success result
+        function showResult(data, foundInSheet) {
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            const [admitNumber, name, fatherName, motherName, institution, course, result] = data;
+            
+            resultContent.innerHTML = `
+                <div class="result-info">
+                    <div class="sheet-badge">
+                        <i class="fas fa-file-alt"></i>
+                        পাওয়া গেছে: ${foundInSheet}
+                    </div>
+                </div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="label">এ্যাডমিট নাম্বার:</span>
+                        <span class="value">${admitNumber || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">পরীক্ষার্থীর নাম:</span>
+                        <span class="value">${name || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">বাবার নাম:</span>
+                        <span class="value">${fatherName || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">মায়ের নাম:</span>
+                        <span class="value">${motherName || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">প্রতিষ্ঠান:</span>
+                        <span class="value">${institution || 'N/A'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">কোর্স:</span>
+                        <span class="value">${course || 'N/A'}</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="label">রেজাল্ট:</span>
+                        <span class="value">${result || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+            
+            resultSection.style.display = 'block';
+        }
+
+        // Search certificate
+        async function searchCertificate() {
+            const admitNumber = document.getElementById('admitNumber').value.trim();
+            
+            if (!admitNumber) {
+                showError('অনুগ্রহ করে একটি এ্যাডমিট নাম্বার লিখুন।');
+                return;
+            }
+
+            try {
+                const allSheetsData = await fetchAllSheetsData();
+                
+                if (allSheetsData.size === 0) {
+                    showError('কোনো ডেটা পাওয়া যায়নি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।');
+                    return;
+                }
+
+                let foundResult = null;
+                let foundInSheet = null;
+
+                for (const [sheetName, sheetData] of allSheetsData) {
+                    const result = sheetData.find(row => 
+                        row[0] && row[0].toString().trim() === admitNumber
+                    );
+                    
+                    if (result) {
+                        foundResult = result;
+                        foundInSheet = sheetName;
+                        break;
+                    }
+                }
+
+                if (foundResult) {
+                    showResult(foundResult, foundInSheet);
+                } else {
+                    showError(`এ্যাডমিট নাম্বার "${admitNumber}" এর কোনো তথ্য পাওয়া যায়নি।`);
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('একটি ত্রুটি ঘটেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।');
+            }
+        }
+
+        // Utility functions
+        function newSearch() {
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('admitNumber').value = '';
+            document.getElementById('admitNumber').focus();
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function downloadResult() {
+            const resultContent = document.getElementById('resultContent');
+            const content = resultContent.innerText;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'certificate_result.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchButton = document.getElementById('searchButton');
+            const admitNumberInput = document.getElementById('admitNumber');
+            
+            if (searchButton) {
+                searchButton.addEventListener('click', searchCertificate);
+            }
+            
+            if (admitNumberInput) {
+                admitNumberInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchCertificate();
+                    }
+                });
+            }
+            
+            console.log('Multi-Sheet Certificate Verifier (Fixed) loaded');
+        });
+    </script>
+</body>
+</html>
+

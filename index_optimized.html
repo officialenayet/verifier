@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সার্টিফিকেট ভেরিফায়ার - অপ্টিমাইজড</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="//sheets.googleapis.com">
+    <link rel="preconnect" href="https://sheets.googleapis.com">
+    
+    <style>
+        /* Additional styles for optimization indicators */
+        .performance-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .cache-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .cache-indicator.valid {
+            background-color: #4CAF50;
+        }
+        
+        .cache-indicator.invalid {
+            background-color: #f44336;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .loading-content {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .batch-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #1976d2;
+        }
+        
+        .optimization-notice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .optimization-notice h4 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .optimization-notice p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>বড় ডেটাসেট লোড করা হচ্ছে...</h3>
+            <p>অনুগ্রহ করে অপেক্ষা করুন</p>
+            <div id="batchProgress" class="batch-info" style="display: none;">
+                ব্যাচ প্রসেসিং: <span id="batchStatus">0/0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-certificate"></i>
+                    <h1>সার্টিফিকেট ভেরিফায়ার</h1>
+                    <span class="version-badge">অপ্টিমাইজড</span>
+                </div>
+                <p class="subtitle">আপনার পরীক্ষার ফলাফল যাচাই করুন</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Optimization Notice -->
+    <div class="container">
+        <div class="optimization-notice">
+            <h4><i class="fas fa-rocket"></i> উন্নত পারফরম্যান্স</h4>
+            <p>এই সংস্করণটি বড় ডেটাসেট (১০০০+ রেকর্ড) এর জন্য অপ্টিমাইজড। ব্যাচ প্রসেসিং এবং ক্যাশিং সহ।</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <main class="main">
+        <div class="container">
+            <div class="search-card">
+                <h2 class="search-title">এ্যাডমিট নাম্বার দিয়ে সার্চ করুন</h2>
+                
+                <div class="search-form">
+                    <div class="input-group">
+                        <i class="fas fa-search input-icon"></i>
+                        <input 
+                            type="text" 
+                            id="admitNumber" 
+                            placeholder="এ্যাডমিট নাম্বার লিখুন..."
+                            class="search-input"
+                            autocomplete="off"
+                        >
+                        <button id="searchButton" class="search-button">
+                            <i class="fas fa-search"></i>
+                            সার্চ করুন
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Result Section -->
+    <section id="resultSection" class="result-section" style="display: none;">
+        <div class="container">
+            <div class="result-card">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>পরীক্ষার ফলাফল</h2>
+                </div>
+                
+                <div id="resultContent" class="result-content">
+                    <!-- Result content will be inserted here -->
+                </div>
+                
+                <div class="result-actions">
+                    <button onclick="printResult()" class="action-button print-button">
+                        <i class="fas fa-print"></i>
+                        প্রিন্ট করুন
+                    </button>
+                    
+                    <button onclick="downloadResult()" class="action-button download-button">
+                        <i class="fas fa-download"></i>
+                        ডাউনলোড করুন
+                    </button>
+                    
+                    <button onclick="newSearch()" class="action-button new-search-button">
+                        <i class="fas fa-search"></i>
+                        নতুন সার্চ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Info (for debugging) -->
+    <div id="performanceInfo" class="performance-info">
+        <span id="cacheIndicator" class="cache-indicator invalid"></span>
+        <span id="cacheStatus">Cache: Empty</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; ২০২৫ সার্টিফিকেট ভেরিফায়ার। সকল অধিকার সংরক্ষিত।</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script_optimized.js"></script>
+    
+    <script>
+        // Performance monitoring
+        let performanceMetrics = {
+            searchStartTime: null,
+            dataFetchTime: null,
+            totalRows: 0
+        };
+
+        // Show performance info in debug mode
+        if (window.location.search.includes('debug=1') || window.location.search.includes('perf=1')) {
+            document.getElementById('performanceInfo').style.display = 'block';
+            
+            // Update cache status periodically
+            setInterval(() => {
+                const status = window.certificateVerifier?.getCacheStatus() || 'Not available';
+                const indicator = document.getElementById('cacheIndicator');
+                const statusText = document.getElementById('cacheStatus');
+                
+                if (status.includes('valid')) {
+                    indicator.className = 'cache-indicator valid';
+                    statusText.textContent = 'Cache: Valid';
+                } else {
+                    indicator.className = 'cache-indicator invalid';
+                    statusText.textContent = 'Cache: Empty';
+                }
+            }, 1000);
+        }
+
+        // Override loading functions to show overlay
+        const originalShowLoading = window.showLoading;
+        const originalHideLoading = window.hideLoading;
+
+        window.showLoading = function() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            if (originalShowLoading) originalShowLoading();
+            performanceMetrics.searchStartTime = Date.now();
+        };
+
+        window.hideLoading = function() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            if (originalHideLoading) originalHideLoading();
+            
+            if (performanceMetrics.searchStartTime) {
+                const totalTime = Date.now() - performanceMetrics.searchStartTime;
+                console.log(`Search completed in ${totalTime}ms`);
+            }
+        };
+
+        // Add batch progress tracking
+        window.updateBatchProgress = function(current, total) {
+            const progressDiv = document.getElementById('batchProgress');
+            const statusSpan = document.getElementById('batchStatus');
+            
+            if (total > 1) {
+                progressDiv.style.display = 'block';
+                statusSpan.textContent = `${current}/${total}`;
+            } else {
+                progressDiv.style.display = 'none';
+            }
+        };
+
+        // Service Worker for caching (if supported)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+    </script>
+</body>
+</html>
+

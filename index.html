@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সার্টিফিকেট ভেরিফায়ার</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-certificate"></i>
+                    <h1>সার্টিফিকেট ভেরিফায়ার</h1>
+                </div>
+                <p class="subtitle">আপনার পরীক্ষার ফলাফল যাচাই করুন</p>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <h2>এ্যাডমিট নাম্বার দিয়ে সার্চ করুন</h2>
+                <div class="search-form">
+                    <div class="input-group">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="admitNumber" placeholder="এ্যাডমিট নাম্বার লিখুন" maxlength="20">
+                    </div>
+                    <button onclick="searchResult()" class="search-btn">
+                        <i class="fas fa-search"></i>
+                        সার্চ করুন
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Section -->
+        <section class="loading-section" id="loadingSection" style="display: none;">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>ডেটা লোড হচ্ছে...</p>
+            </div>
+        </section>
+
+        <!-- Result Section -->
+        <section class="result-section" id="resultSection" style="display: none;">
+            <div class="result-container">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>পরীক্ষার ফলাফল</h3>
+                </div>
+                <div class="result-card" id="resultCard">
+                    <!-- Result content will be dynamically inserted here -->
+                </div>
+                <div class="result-actions">
+                    <button onclick="printResult()" class="action-btn print-btn">
+                        <i class="fas fa-print"></i>
+                        প্রিন্ট করুন
+                    </button>
+                    <button onclick="downloadResult()" class="action-btn download-btn">
+                        <i class="fas fa-download"></i>
+                        ডাউনলোড করুন
+                    </button>
+                    <button onclick="resetSearch()" class="action-btn reset-btn">
+                        <i class="fas fa-redo"></i>
+                        নতুন সার্চ
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section class="error-section" id="errorSection" style="display: none;">
+            <div class="error-container">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>কোনো ফলাফল পাওয়া যায়নি</h3>
+                <p>দয়া করে আপনার এ্যাডমিট নাম্বার পুনরায় চেক করুন এবং আবার চেষ্টা করুন।</p>
+                <button onclick="resetSearch()" class="retry-btn">
+                    <i class="fas fa-redo"></i>
+                    আবার চেষ্টা করুন
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; ২০২৫ সার্টিফিকেট ভেরিফায়ার। সকল অধিকার সংরক্ষিত।</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

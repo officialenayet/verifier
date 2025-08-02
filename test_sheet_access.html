@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sheet Access Test</title>
+</head>
+<body>
+    <h1>Google Sheet Access Test</h1>
+    <input type="text" id="admitNumber" placeholder="Enter Admit Number">
+    <button onclick="fetchData()">Fetch Data</button>
+    <div id="result"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyCiEgyS_hZLOPYfntM2b5imvAx9iIWBSHY';
+        const SHEET_ID = '1ia2pkU2Zx0IKF4XI4Os_pVZfdlFqb815IwkDmc9IBpc';
+        const SHEET_NAME = 'Sheet1'; // Assuming the sheet name is 'Sheet1'. Please confirm this.
+
+        async function fetchData() {
+            const admitNumber = document.getElementById('admitNumber').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Fetching data...';
+
+            // Construct the URL with a specific range to ensure data is fetched
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A1:G?key=${API_KEY}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('API Response:', data); // Log the API response
+
+                if (data.values) {
+                    const headers = data.values[0];
+                    const rows = data.values.slice(1);
+
+                    let found = false;
+                    for (const row of rows) {
+                        if (row[0] === admitNumber) { // Assuming Admit Number is in the first column (index 0)
+                            let html = '<h2>Result Found:</h2>';
+                            html += `<p><strong>${headers[0]}:</strong> ${row[0]}</p>`;
+                            html += `<p><strong>${headers[1]}:</strong> ${row[1]}</p>`;
+                            html += `<p><strong>${headers[2]}:</strong> ${row[2]}</p>`;
+                            html += `<p><strong>${headers[3]}:</strong> ${row[3]}</p>`;
+                            html += `<p><strong>${headers[4]}:</strong> ${row[4]}</p>`;
+                            html += `<p><strong>${headers[5]}:</strong> ${row[5]}</p>`;
+                            html += `<p><strong>${headers[6]}:</strong> ${row[6]}</p>`;
+                            resultDiv.innerHTML = html;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        resultDiv.innerHTML = '<p>No result found for the given Admit Number.</p>';
+                    }
+
+                } else {
+                    resultDiv.innerHTML = '<p>No data found in the sheet.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                resultDiv.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
