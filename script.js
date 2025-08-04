@@ -129,7 +129,7 @@ function showResult(result) {
     // Create result HTML with sheet information
     const resultHTML = `
         ${result.sheetNumber ? `<div class="sheet-info" style="background: #e8f5e8; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; color: #2e7d32; font-weight: 600;">
-            <i class="fas fa-check-circle"></i> ডাঃ মোস্তফা মেডিকেল ইনস্টিটিউট
+            <i class="fas fa-check-circle"></i> SCIENCE & INFORMATION TECHNOLOGY-FOUNDATION
         </div>` : ''}
         <div class="result-item">
             <div class="result-label">
